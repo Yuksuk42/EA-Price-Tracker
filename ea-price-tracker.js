@@ -3,8 +3,7 @@ const { request, ProxyAgent } = require('undici');
 const readline = require('readline');
 
 // Proxy Listesi (Global - 89 Ülke)
-// Proxy Listesi (Global - 89 Ülke)
-const temelProxyler = [
+const baseProxies = [
     // --- AVRUPA ---
     { name: 'Arnavutluk', code: 'al', locale: 'en-US', currency: 'EUR' },
     { name: 'Avusturya', code: 'at', locale: 'de-AT', currency: 'EUR' },
@@ -112,276 +111,267 @@ if (!PROXY_TEMPLATE) {
 }
 
 // Proxy URL Oluşturucu
-// Proxy URL Oluşturucu
-const proxyler = temelProxyler.map(p => ({
+const proxies = baseProxies.map(p => ({
     ...p,
     url: PROXY_TEMPLATE.replace('COUNTRY_CODE', p.code)
 }));
 
 const EA_GRAPHQL_URL = 'https://service-aggregation-layer.juno.ea.com/graphql';
 
-let kurOranlari = { USD: 1, TRY: 43 };
-let basariliSonuclar = [];
-let hataliUlkeler = [];
-let tamamlananSayisi = 0;
-const toplamSayi = proxyler.length;
-const tamListeyiGoster = process.argv.includes('--full');
+let rates = { USD: 1, TRY: 43 };
+let successfulResults = [];
+let failedCountries = [];
+let completedCount = 0;
+const totalCount = proxies.length;
+const showFullList = process.argv.includes('--full');
 
-// Spinner (Yükleniyor animasyonu)
-let yuklemeInterval;
-const cerceveler = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-function yukleniyorBaslat() {
+// Spinner
+let spinnerInterval;
+const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+function startSpinner() {
     let i = 0;
     process.stdout.write('\x1B[?25l');
-    yuklemeInterval = setInterval(() => {
-        const cerceve = cerceveler[i = (i + 1) % cerceveler.length];
-        const yuzde = Math.round((tamamlananSayisi / toplamSayi) * 100);
+    spinnerInterval = setInterval(() => {
+        const frame = frames[i = (i + 1) % frames.length];
+        const percent = Math.round((completedCount / totalCount) * 100);
         readline.cursorTo(process.stdout, 0);
-        process.stdout.write(`${cerceve} Veriler çekiliyor... %${yuzde} (${tamamlananSayisi}/${toplamSayi}) Tamamlandı`);
+        process.stdout.write(`${frame} Veriler çekiliyor... %${percent} (${completedCount}/${totalCount}) Tamamlandı`);
     }, 80);
 }
-function yukleniyorDurdur() {
-    if (yuklemeInterval) {
-        clearInterval(yuklemeInterval);
+function stopSpinner() {
+    if (spinnerInterval) {
+        clearInterval(spinnerInterval);
         readline.cursorTo(process.stdout, 0);
         readline.clearLine(process.stdout, 0);
         process.stdout.write('\x1B[?25h');
     }
 }
 
-async function dovizKurlariniCek() {
+async function fetchExchangeRates() {
     try {
-        // Burası isteği iptal etmek için, dökümantasyonda timeout yerine bunu öneriyorlar.
-        const kontrolcu = new AbortController();
-        setTimeout(() => kontrolcu.abort(), 10000); // 10 saniye sonra iptal et
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 10000);
         process.stdout.write('💱 Döviz kurları güncelleniyor... ');
-        const { body } = await request('https://open.er-api.com/v6/latest/USD', { signal: kontrolcu.signal });
+        const { body } = await request('https://open.er-api.com/v6/latest/USD', { signal: controller.signal });
         const data = await body.json();
         if (data && data.rates) {
-            kurOranlari = data.rates;
-            console.log(`✅ (1 USD = ${kurOranlari.TRY.toFixed(2)} TRY)\n`);
+            rates = data.rates;
+            console.log(`✅ (1 USD = ${rates.TRY.toFixed(2)} TRY)\n`);
         }
-    } catch (hata) {
+    } catch (error) {
         console.log('❌ Başarısız (Varsayılan kullanılıyor)\n');
     }
 }
 
-function fiyatiTemizleVeCevir(fiyatMetni) {
-    if (!fiyatMetni) return 0;
-
-    // Bu regex kısmı biraz karışık, AI'dan yardım alarak hallettim ama sayıları ayıklıyor.
-    const eslesme = fiyatMetni.match(/[\d][\d.,\s]*[\d]|\d+/);
-    if (!eslesme) return 0;
-
-    let temiz = eslesme[0].replace(/\s/g, '');
-    const sonNokta = temiz.lastIndexOf('.');
-    const sonVirgul = temiz.lastIndexOf(',');
-    const sonAyirici = Math.max(sonNokta, sonVirgul);
-
-    let tamKisim = temiz;
-    let ondalikKisim = '0';
-
-    if (sonAyirici !== -1) {
-        const ayiricidanSonraki = temiz.length - sonAyirici - 1;
-        if (ayiricidanSonraki === 2) {
-            tamKisim = temiz.substring(0, sonAyirici);
-            ondalikKisim = temiz.substring(sonAyirici + 1);
-        } else if (ayiricidanSonraki !== 3) {
-            tamKisim = temiz.substring(0, sonAyirici);
-            ondalikKisim = temiz.substring(sonAyirici + 1);
+function parsePriceString(priceStr) {
+    if (!priceStr) return 0;
+    const match = priceStr.match(/[\d][\d.,\s]*[\d]|\d+/);
+    if (!match) return 0;
+    let clean = match[0].replace(/\s/g, '');
+    const lastDotIndex = clean.lastIndexOf('.');
+    const lastCommaIndex = clean.lastIndexOf(',');
+    const lastSeparatorIndex = Math.max(lastDotIndex, lastCommaIndex);
+    let integerPart = clean;
+    let decimalPart = '0';
+    if (lastSeparatorIndex !== -1) {
+        const charsAfterSeparator = clean.length - lastSeparatorIndex - 1;
+        if (charsAfterSeparator === 2) {
+            integerPart = clean.substring(0, lastSeparatorIndex);
+            decimalPart = clean.substring(lastSeparatorIndex + 1);
+        } else if (charsAfterSeparator !== 3) {
+            integerPart = clean.substring(0, lastSeparatorIndex);
+            decimalPart = clean.substring(lastSeparatorIndex + 1);
         }
     }
-
-    tamKisim = tamKisim.replace(/[.,]/g, '');
-    const deger = parseFloat(`${tamKisim}.${ondalikKisim}`);
-    return Math.round(deger);
+    integerPart = integerPart.replace(/[.,]/g, '');
+    const value = parseFloat(`${integerPart}.${decimalPart}`);
+    return Math.round(value);
 }
 
-function fiyatDonustur(miktar, birim) {
-    if (!kurOranlari[birim]) return { usd: 0, try: 0 };
-    const dolaraCevir = 1 / kurOranlari[birim];
-    const dolarDegeri = miktar * dolaraCevir;
-    const tlDegeri = dolarDegeri * kurOranlari.TRY;
-    return { usdVal: dolarDegeri, usd: dolarDegeri.toFixed(2), try: tlDegeri.toFixed(2) };
+function convertPrice(amount, fromCurrency) {
+    if (!rates[fromCurrency]) return { usd: 0, try: 0 };
+    const rateToUsd = 1 / rates[fromCurrency];
+    const usdVal = amount * rateToUsd;
+    const tryVal = usdVal * rates.TRY;
+    return { usdVal: usdVal, usd: usdVal.toFixed(2), try: tryVal.toFixed(2) };
 }
 
-async function veriyiGetir(proxyAyari, hedefDizi, denemeHakki = 3) {
-    for (let i = 0; i < denemeHakki; i++) {
+async function fetchWithRetry(proxyConfig, targetArray, retries = 3) {
+    for (let i = 0; i < retries; i++) {
         try {
-            const istemci = new ProxyAgent(proxyAyari.url);
-            const parametreler = new URLSearchParams({
+            const client = new ProxyAgent(proxyConfig.url);
+            const params = new URLSearchParams({
                 operationName: 'PlanSelection',
-                variables: JSON.stringify({ locale: proxyAyari.locale }),
-                // Buradaki hash değerini developer tools'dan buldum
+                variables: JSON.stringify({ locale: proxyConfig.locale }),
                 extensions: JSON.stringify({ persistedQuery: { version: 1, sha256Hash: 'a60817e7ed053ce4467a20930d6a445a5e3e14533ab9316e60662db48a25f131' } })
             });
-            const { statusCode, body } = await request(`${EA_GRAPHQL_URL}?${parametreler.toString()}`, {
-                dispatcher: istemci, headers: { 'User-Agent': 'Mozilla/5.0' },
+            const { statusCode, body } = await request(`${EA_GRAPHQL_URL}?${params.toString()}`, {
+                dispatcher: client, headers: { 'User-Agent': 'Mozilla/5.0' },
             });
             if (statusCode !== 200) throw new Error(`HTTP ${statusCode}`);
             const data = await body.json();
 
-            veriyiIsle(data, proxyAyari, hedefDizi);
-            tamamlananSayisi++;
+            processCountryData(data, proxyConfig, targetArray);
+            completedCount++;
             return;
-        } catch (hata) {
-            if (i < denemeHakki - 1) await new Promise(r => setTimeout(r, 1500));
+        } catch (error) {
+            if (i < retries - 1) await new Promise(r => setTimeout(r, 1500));
         }
     }
-    hataliUlkeler.push(proxyAyari.name);
-    tamamlananSayisi++;
+    failedCountries.push(proxyConfig.name);
+    completedCount++;
 }
 
-function veriyiIsle(data, proxyAyari, hedefDizi) {
+function processCountryData(data, proxyConfig, targetArray) {
     if (data?.data?.gameSubscriptions?.items) {
-        const urunler = data.data.gameSubscriptions.items;
-        let ulkeSonucu = { name: proxyAyari.name, code: proxyAyari.code };
+        const items = data.data.gameSubscriptions.items;
+        let countryResult = { name: proxyConfig.name, code: proxyConfig.code };
 
         // Basit ve Pro paketleri bul
-        const basicPaket = urunler.find(i => i.slug === 'origin-access-basic') || urunler[0];
-        const proPaket = urunler.find(i => i.slug === 'origin-access-premier');
+        const basicItem = items.find(i => i.slug === 'origin-access-basic') || items[0];
+        const proItem = items.find(i => i.slug === 'origin-access-premier');
 
-        const paketiIsle = (urun, tipIsmi) => {
-            if (!urun || !urun.offers) return;
-            urun.offers.forEach(teklif => {
-                const fiyatBilgisi = teklif.lowestPricePurchaseOption;
-                if (!fiyatBilgisi) return;
+        const processItem = (item, typeName) => {
+            if (!item || !item.offers) return;
+            item.offers.forEach(offer => {
+                const priceInfo = offer.lowestPricePurchaseOption;
+                if (!priceInfo) return;
 
-                const name = teklif.offerName || teklif.name;
-                const yillikMi = name.toLowerCase().includes('annual') || name.toLowerCase().includes('yıllık') || name.toLowerCase().includes('12-month');
-                const aylikMi = name.toLowerCase().includes('monthly') || name.toLowerCase().includes('aylık');
+                const name = offer.offerName || offer.name;
+                const isYearly = name.toLowerCase().includes('annual') || name.toLowerCase().includes('yıllık') || name.toLowerCase().includes('12-month');
+                const isMonthly = name.toLowerCase().includes('monthly') || name.toLowerCase().includes('aylık');
 
-                const fiyatMetni = fiyatBilgisi.displayTotalWithDiscount || fiyatBilgisi.displayTotal;
-                const paraBirimi = fiyatBilgisi.currency || proxyAyari.currency;
-                const miktar = fiyatiTemizleVeCevir(fiyatMetni);
-                const cevrilen = fiyatDonustur(miktar, paraBirimi);
+                const priceStr = priceInfo.displayTotalWithDiscount || priceInfo.displayTotal;
+                const currency = priceInfo.currency || proxyConfig.currency;
+                const amount = parsePriceString(priceStr);
+                const converted = convertPrice(amount, currency);
 
                 // Orijinal değerleri de sakla (Gruplama için önemli)
-                const sonucObjesi = { ...cevrilen, originalAmount: miktar, originalCurrency: paraBirimi };
+                const finalObj = { ...converted, originalAmount: amount, originalCurrency: currency };
 
-                if (tipIsmi === 'Basic') {
-                    if (yillikMi) ulkeSonucu.basicYearly = sonucObjesi;
-                    if (aylikMi) ulkeSonucu.basicMonthly = sonucObjesi;
+                if (typeName === 'Basic') {
+                    if (isYearly) countryResult.basicYearly = finalObj;
+                    if (isMonthly) countryResult.basicMonthly = finalObj;
                 } else {
-                    if (yillikMi) ulkeSonucu.proYearly = sonucObjesi;
-                    if (aylikMi) ulkeSonucu.proMonthly = sonucObjesi;
+                    if (isYearly) countryResult.proYearly = finalObj;
+                    if (isMonthly) countryResult.proMonthly = finalObj;
                 }
             });
         };
 
-        if (basicPaket) paketiIsle(basicPaket, 'Basic');
-        if (proPaket) paketiIsle(proPaket, 'Pro');
+        if (basicItem) processItem(basicItem, 'Basic');
+        if (proItem) processItem(proItem, 'Pro');
 
-        if (ulkeSonucu.basicYearly || ulkeSonucu.proYearly) hedefDizi.push(ulkeSonucu);
+        if (countryResult.basicYearly || countryResult.proYearly) targetArray.push(countryResult);
     } else {
-        hataliUlkeler.push(proxyAyari.name);
+        failedCountries.push(proxyConfig.name);
     }
 }
 
-function ucuzaGoreGrupla(data, tip, bazFiyatUsd) {
-    const gecerliOlanlar = data.filter(r => r[tip]);
-    const limit = bazFiyatUsd > 0 ? (bazFiyatUsd - 1.0) : 999999;
+function getCheaperAndGrouped(data, type, homePriceUsd) {
+    const valid = data.filter(r => r[type]);
+    const threshold = homePriceUsd > 0 ? (homePriceUsd - 1.0) : 999999;
 
-    const alinabilirler = [];
-    const digerleri = [];
+    const worthy = [];
+    const others = [];
 
-    gecerliOlanlar.forEach(r => {
-        if (r[tip].usdVal <= limit) alinabilirler.push(r);
-        else digerleri.push(r);
+    valid.forEach(r => {
+        if (r[type].usdVal <= threshold) worthy.push(r);
+        else others.push(r);
     });
 
-    const gruplar = {};
-    alinabilirler.forEach(r => {
-        const anahtar = `${r[tip].originalCurrency}_${r[tip].originalAmount}`;
-        if (!gruplar[anahtar]) gruplar[anahtar] = { price: r[tip], countries: [] };
-        gruplar[anahtar].countries.push(r.name);
+    const groups = {};
+    worthy.forEach(r => {
+        const key = `${r[type].originalCurrency}_${r[type].originalAmount}`;
+        if (!groups[key]) groups[key] = { price: r[type], countries: [] };
+        groups[key].countries.push(r.name);
     });
 
-    const gruplanmisListe = Object.values(gruplar).sort((a, b) => a.price.usdVal - b.price.usdVal);
-    digerleri.sort((a, b) => a[type].usdVal - b[type].usdVal);
+    const groupedList = Object.values(groups).sort((a, b) => a.price.usdVal - b.price.usdVal);
+    others.sort((a, b) => a[type].usdVal - b[type].usdVal);
 
-    return { gruplanmisListe, digerleri };
+    return { groupedList, others };
 }
 
-function tabloyuYazdir(baslik, data, tip) {
-    const anaUlke = data.find(r => r.name === 'Türkiye');
-    const anaFiyatHam = anaUlke && anaUlke[tip] ? anaUlke[tip] : null;
-    const anaFiyatUsd = anaFiyatHam ? anaFiyatHam.usdVal : 0;
+function printGroupedTable(title, data, type) {
+    const homeCountry = data.find(r => r.name === 'Türkiye');
+    const homePriceRaw = homeCountry && homeCountry[type] ? homeCountry[type] : null;
+    const homePriceUsd = homePriceRaw ? homePriceRaw.usdVal : 0;
 
     console.log(`\n════════════════════════════════════════════════════════════`);
-    console.log(`📊 ${baslik}`);
-    if (anaFiyatUsd > 0) console.log(`   (Baz Ülke: Türkiye - $${anaFiyatHam.usd})`);
+    console.log(`📊 ${title}`);
+    if (homePriceUsd > 0) console.log(`   (Baz Ülke: Türkiye - $${homePriceRaw.usd})`);
     console.log(`════════════════════════════════════════════════════════════`);
 
-    if (tamListeyiGoster) {
-        const sirali = data.filter(r => r[tip]).sort((a, b) => a[tip].usdVal - b[tip].usdVal);
-        sirali.forEach((r, indeks) => {
-            const madalya = indeks === 0 ? '🥇' : (indeks === 1 ? '🥈' : (indeks === 2 ? '🥉' : '  '));
-            console.log(`${madalya} ${r.name.padEnd(18)} : $${r[tip].usd} (₺${r[tip].try})`);
+    if (showFullList) {
+        const sorted = data.filter(r => r[type]).sort((a, b) => a[type].usdVal - b[type].usdVal);
+        sorted.forEach((r, index) => {
+            const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '  '));
+            console.log(`${medal} ${r.name.padEnd(18)} : $${r[type].usd} (₺${r[type].try})`);
         });
-        return sirali[0];
+        return sorted[0];
     } else {
-        const { gruplanmisListe, digerleri } = ucuzaGoreGrupla(data, tip, anaFiyatUsd);
+        const { groupedList, others } = getCheaperAndGrouped(data, type, homePriceUsd);
 
-        if (gruplanmisListe.length === 0) {
+        if (groupedList.length === 0) {
             console.log("   (Bu kategoride Türkiye'den belirgin şekilde ucuz ülke yok)");
         } else {
             const limit = 5;
-            gruplanmisListe.slice(0, limit).forEach((g, indeks) => {
-                const madalya = indeks === 0 ? '🥇' : (indeks === 1 ? '🥈' : (indeks === 2 ? '🥉' : '  '));
-                const ulkeListesi = g.countries.join(', ');
-                const gosterilenUlkeler = ulkeListesi.length > 50 ? ulkeListesi.substring(0, 47) + '...' : ulkeListesi;
+            groupedList.slice(0, limit).forEach((g, index) => {
+                const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '  '));
+                const countryList = g.countries.join(', ');
+                const displayCountries = countryList.length > 50 ? countryList.substring(0, 47) + '...' : countryList;
 
-                console.log(`${madalya} Fiyat: $${g.price.usd} (₺${g.price.try})`);
-                console.log(`   Ülkeler: ${gosterilenUlkeler}`);
+                console.log(`${medal} Fiyat: $${g.price.usd} (₺${g.price.try})`);
+                console.log(`   Ülkeler: ${displayCountries}`);
                 console.log('   ------------------------------------------------------------');
             });
 
-            if (gruplanmisListe.length > limit) {
-                console.log(`   ... ve daha ucuz ${gruplanmisListe.length - limit} farklı fiyat grubu daha.`);
+            if (groupedList.length > limit) {
+                console.log(`   ... ve daha ucuz ${groupedList.length - limit} farklı fiyat grubu daha.`);
             }
         }
 
-        if (digerleri.length > 0) {
-            console.log(`\n   🚫 +${digerleri.length} Ülke (Türkiye fiyatında veya daha pahalı)`);
+        if (others.length > 0) {
+            console.log(`\n   🚫 +${others.length} Ülke (Türkiye fiyatında veya daha pahalı)`);
             console.log(`      (Tam listeyi görmek için '--full' parametresi ile çalıştırın)`);
         }
 
-        if (gruplanmisListe.length > 0) return { name: gruplanmisListe[0].countries[0], plan: gruplanmisListe[0].price };
-        if (digerleri.length > 0) return { name: digerleri[0].name, plan: digerleri[0][tip] };
+        if (groupedList.length > 0) return { name: groupedList[0].countries[0], plan: groupedList[0].price };
+        if (others.length > 0) return { name: others[0].name, plan: others[0][type] };
         return null;
     }
 }
 
-function sonuclariGoster() {
-    yukleniyorDurdur();
+function printFinalResults() {
+    stopSpinner();
     console.log('\n\n✅ Tarama Tamamlandı!\n');
 
-    tabloyuYazdir('BASIC - AYLIK FİYATLAR', basariliSonuclar, 'basicMonthly');
-    tabloyuYazdir('BASIC - YILLIK FİYATLAR', basariliSonuclar, 'basicYearly');
-    tabloyuYazdir('PRO - AYLIK FİYATLAR', basariliSonuclar, 'proMonthly');
-    const kazananVeri = tabloyuYazdir('PRO - YILLIK FİYATLAR', basariliSonuclar, 'proYearly');
+    printGroupedTable('BASIC - AYLIK FİYATLAR', successfulResults, 'basicMonthly');
+    printGroupedTable('BASIC - YILLIK FİYATLAR', successfulResults, 'basicYearly');
+    printGroupedTable('PRO - AYLIK FİYATLAR', successfulResults, 'proMonthly');
+    const winnerData = printGroupedTable('PRO - YILLIK FİYATLAR', successfulResults, 'proYearly');
 
     console.log('\n════════════════════════════════════════════════════════════');
     console.log('🏆 MAKUL SEÇENEK (Pro Yıllık)');
     console.log('════════════════════════════════════════════════════════════');
 
-    if (kazananVeri) {
-        const { name, plan } = kazananVeri;
+    if (winnerData) {
+        const { name, plan } = winnerData;
         console.log(`✅ EN UCUZ: ${name} ($${plan.usd} - ₺${plan.try} TL)`);
 
         if (name === 'Mısır') {
             console.log(`   ⚠️  Uyarı: Mısır'da ödeme kısıtlamaları olabilir.`);
-            const { gruplanmisListe } = ucuzaGoreGrupla(basariliSonuclar, 'proYearly', 0);
-            if (gruplanmisListe.length > 1) {
-                const alt = gruplanmisListe[1];
+            const { groupedList } = getCheaperAndGrouped(successfulResults, 'proYearly', 0);
+            if (groupedList.length > 1) {
+                const alt = groupedList[1];
                 console.log(`   💡 ALTERNATİF: ${alt.countries[0]} ($${alt.price.usd} - ₺${alt.price.try} TL)`);
             }
         }
     }
 
-    if (hataliUlkeler.length > 0) {
-        console.log(`\n⚠️  ALINAMAYAN VERİLER (${hataliUlkeler.length}): ${hataliUlkeler.join(', ')}`);
+    if (failedCountries.length > 0) {
+        console.log(`\n⚠️  ALINAMAYAN VERİLER (${failedCountries.length}): ${failedCountries.join(', ')}`);
     }
 }
 
@@ -395,55 +385,55 @@ function getResults() {
     };
 }
 
-// Web Arayüzü İçin Tarama Durumu
-let webTaramaModu = false;
+// Web Mode Scanning Flag
+let isWebScanning = false;
 
-async function taramayiBaslat() {
-    // Hem konsol hem web aynı anda çalışmasın
-    if (yuklemeInterval || webTaramaModu) return;
+async function startScan() {
+    // If already scanning (CLI spinner or Web flag), ignore
+    if (spinnerInterval || isWebScanning) return;
 
-    webTaramaModu = true;
-    hataliUlkeler = [];
-    tamamlananSayisi = 0;
+    isWebScanning = true;
+    failedCountries = [];
+    completedCount = 0;
 
-    // Her taramada listeyi sıfırla ki kullanıcı yeni sonuçları görsün
-    basariliSonuclar = [];
+    // Always clear for "pop pop" effect as requested
+    successfulResults = [];
 
     if (require.main === module) {
         console.clear();
     }
 
-    await dovizKurlariniCek();
+    await fetchExchangeRates();
 
-    // Sadece konsoldan çalıştırıyorsak spinner açalım
-    if (require.main === module) yukleniyorBaslat();
+    // Start CLI Spinner only if in CLI mode
+    if (require.main === module) startSpinner();
 
-    // Bilgi Sistemleri Entegrasyonu dersinde görmüştük, hepsini aynı anda başlatmak için Promise.all kullandım.
-    const islemSozleri = proxyler.map(p => veriyiGetir(p, basariliSonuclar));
-    await Promise.all(islemSozleri);
+    // Direct push to successfulResults (Live Stream)
+    const promises = proxies.map(p => fetchWithRetry(p, successfulResults));
+    await Promise.all(promises);
 
     if (require.main === module) {
-        sonuclariGoster();
+        printFinalResults();
     } else {
-        yukleniyorDurdur(); // Güvenlik önlemi
+        stopSpinner(); // Safety
     }
 
-    webTaramaModu = false;
+    isWebScanning = false;
 }
 
 module.exports = {
-    taramayiBaslat,
-    sonuclariGetir
+    startScan,
+    getResults
 };
 
-function sonuclariGetir() {
+function getResults() {
     return {
-        successful: basariliSonuclar,
-        failed: hataliUlkeler,
-        completed: tamamlananSayisi,
-        total: toplamSayi,
-        // Durum kontrolü: Spinner dönüyor mu veya web taraması aktif mi?
-        isScanning: (yuklemeInterval !== undefined) || webTaramaModu
+        successful: successfulResults,
+        failed: failedCountries,
+        completed: completedCount,
+        total: totalCount,
+        // Status is true if EITHER CLI spinner is active OR Web flag is true
+        isScanning: (spinnerInterval !== undefined) || isWebScanning
     };
 }
 
@@ -455,6 +445,6 @@ if (require.main === module) {
             if (name === 'warning' && typeof data === 'object' && data.name === 'ExperimentalWarning') return false;
             return originalEmit.apply(process, [name, data, ...args]);
         };
-        await taramayiBaslat();
+        await startScan();
     })();
 }

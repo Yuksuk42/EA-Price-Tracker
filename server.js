@@ -1,35 +1,35 @@
 const express = require('express');
 const path = require('path');
-const { taramayiBaslat, sonuclariGetir } = require('./ea-price-tracker');
+const { startScan, getResults } = require('./ea-price-tracker');
 
 const app = express();
 const PORT = 3000;
 
-// HTML dosyalarini buradan veriyoruz (public klasörü)
+// Statik dosyaları sun (public klasörü)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API: Sonuçları Getir - Burası frontend'e veriyi yolluyor
+// API: Sonuçları Getir
 app.get('/api/prices', (req, res) => {
-    res.json(sonuclariGetir());
+    res.json(getResults());
 });
 
-// API: Taramayı Başlat (Yenile butonu için)
+// API: Taramayı Başlat (Refresh)
 app.post('/api/refresh', (req, res) => {
-    const durum = sonuclariGetir();
-    if (durum.isScanning) {
-        return res.json({ message: 'Şu an zaten tarama yapıyor, bekle biraz.', status: durum });
+    const status = getResults();
+    if (status.isScanning) {
+        return res.json({ message: 'Tarama zaten devam ediyor.', status });
     }
 
-    // Arka planda başlasın ki bekletmeyelim
-    taramayiBaslat().then(() => {
-        console.log('Web isteği geldi, taramayı bitirdim.');
+    // Arka planda başlat
+    startScan().then(() => {
+        console.log('Web isteği üzerine tarama tamamlandı.');
     });
 
-    res.json({ message: 'Taramayı başlattım.', status: sonuclariGetir() });
+    res.json({ message: 'Tarama başlatıldı.', status: getResults() });
 });
 
 app.listen(PORT, () => {
     console.log(`Server çalışıyor: http://localhost:${PORT}`);
-    // İlk açılışta direkt taramaya başlasın
-    taramayiBaslat();
+    // İlk açılışta otomatik tarama başlat
+    startScan();
 });

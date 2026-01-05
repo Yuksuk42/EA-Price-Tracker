@@ -367,12 +367,56 @@
         const tooltipEl = document.getElementById('customTooltip');
         const rateWarningEl = document.getElementById('rateWarning');
 
-        let mevcutVeri = [];
-        let aktifSekme = 'proYearly';
-        let aktifSekmeIsmi = 'Pro Yearly';
-        let taramaYapiliyorMu = false;
-        let taramaSayaci;
-        let bolgeIsimleri = new Intl.DisplayNames(['tr'], { type: 'region' });
+        
+        // --- STATIC MODE (GENERATED 05.01.2026 04:16:02) ---
+        const STATIC_DATA = [{"name":"Belçika","code":"be","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Moldova","code":"md","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Estonya","code":"ee","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"BAE","code":"ae","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Cezayir","code":"dz","basicYearly":{"usdVal":39.41674616215819,"usd":"39.42","try":"1696.52","originalAmount":650,"originalCurrency":"ZAR"},"basicMonthly":{"usdVal":5.457703314760365,"usd":"5.46","try":"234.90","originalAmount":90,"originalCurrency":"ZAR"},"proMonthly":{"usdVal":18.495550122243458,"usd":"18.50","try":"796.06","originalAmount":305,"originalCurrency":"ZAR"},"proYearly":{"usdVal":103.08995150102912,"usd":"103.09","try":"4437.05","originalAmount":1700,"originalCurrency":"ZAR"}},{"name":"Macaristan","code":"hu","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"İrlanda","code":"ie","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Ukrayna","code":"ua","basicYearly":{"usdVal":19.59052957407849,"usd":"19.59","try":"843.19","originalAmount":829,"originalCurrency":"UAH"},"basicMonthly":{"usdVal":3.2847811951711825,"usd":"3.28","try":"141.38","originalAmount":139,"originalCurrency":"UAH"},"proMonthly":{"usdVal":10.84686739988182,"usd":"10.85","try":"466.85","originalAmount":459,"originalCurrency":"UAH"},"proYearly":{"usdVal":65.43567719013673,"usd":"65.44","try":"2816.39","originalAmount":2769,"originalCurrency":"UAH"}},{"name":"Bulgaristan","code":"bg","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Yunanistan","code":"gr","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Kıbrıs","code":"cy","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Fas","code":"ma","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Bosna","code":"ba","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Avusturya","code":"at","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Bangladeş","code":"bd","basicYearly":{"usdVal":27.715029870680272,"usd":"27.72","try":"1192.87","originalAmount":2499,"originalCurrency":"INR"},"basicMonthly":{"usdVal":4.425088802881724,"usd":"4.43","try":"190.46","originalAmount":399,"originalCurrency":"INR"},"proMonthly":{"usdVal":15.79279813359292,"usd":"15.79","try":"679.73","originalAmount":1424,"originalCurrency":"INR"},"proYearly":{"usdVal":94.25771863581897,"usd":"94.26","try":"4056.90","originalAmount":8499,"originalCurrency":"INR"}},{"name":"Endonezya","code":"id","basicYearly":{"usdVal":36.49169418503979,"usd":"36.49","try":"1570.62","originalAmount":610000,"originalCurrency":"IDR"},"basicMonthly":{"usdVal":5.204553105079445,"usd":"5.20","try":"224.01","originalAmount":87000,"originalCurrency":"IDR"},"proMonthly":{"usdVal":15.553836865754663,"usd":"15.55","try":"669.45","originalAmount":260000,"originalCurrency":"IDR"},"proYearly":{"usdVal":101.63834167275836,"usd":"101.64","try":"4374.57","originalAmount":1699000,"originalCurrency":"IDR"}},{"name":"Filipinler","code":"ph","basicYearly":{"usdVal":40.76212330511728,"usd":"40.76","try":"1754.42","originalAmount":2400,"originalCurrency":"PHP"},"basicMonthly":{"usdVal":4.568754653781895,"usd":"4.57","try":"196.64","originalAmount":269,"originalCurrency":"PHP"},"proMonthly":{"usdVal":17.408823494893838,"usd":"17.41","try":"749.28","originalAmount":1025,"originalCurrency":"PHP"},"proYearly":{"usdVal":78.11041878343099,"usd":"78.11","try":"3361.91","originalAmount":4599,"originalCurrency":"PHP"}},{"name":"Gürcistan","code":"ge","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Kuveyt","code":"kw","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Fransa","code":"fr","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Katar","code":"qa","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"İtalya","code":"it","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Letonya","code":"lv","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Singapur","code":"sg","basicYearly":{"usdVal":44.308564845584655,"usd":"44.31","try":"1907.06","originalAmount":57,"originalCurrency":"SGD"},"basicMonthly":{"usdVal":6.996089186144945,"usd":"7.00","try":"301.12","originalAmount":9,"originalCurrency":"SGD"},"proMonthly":{"usdVal":19.433581072624847,"usd":"19.43","try":"836.43","originalAmount":25,"originalCurrency":"SGD"},"proYearly":{"usdVal":124.37491886479903,"usd":"124.37","try":"5353.16","originalAmount":160,"originalCurrency":"SGD"}},{"name":"Bahreyn","code":"bh","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Ermenistan","code":"am","basicYearly":{"usdVal":22.432875387609286,"usd":"22.43","try":"965.52","originalAmount":1799,"originalCurrency":"RUB"},"basicMonthly":{"usdVal":3.7284212011646343,"usd":"3.73","try":"160.47","originalAmount":299,"originalCurrency":"RUB"},"proMonthly":{"usdVal":12.457166488172138,"usd":"12.46","try":"536.16","originalAmount":999,"originalCurrency":"RUB"},"proYearly":{"usdVal":74.80534710965432,"usd":"74.81","try":"3219.66","originalAmount":5999,"originalCurrency":"RUB"}},{"name":"Türkiye","code":"tr","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Umman","code":"om","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Vietnam","code":"vn","basicYearly":{"usdVal":35.887586728794005,"usd":"35.89","try":"1544.62","originalAmount":940000,"originalCurrency":"VND"},"basicMonthly":{"usdVal":5.344959725565065,"usd":"5.34","try":"230.05","originalAmount":140000,"originalCurrency":"VND"},"proMonthly":{"usdVal":15.08042208284429,"usd":"15.08","try":"649.07","originalAmount":395000,"originalCurrency":"VND"},"proYearly":{"usdVal":76.35274967969696,"usd":"76.35","try":"3286.26","originalAmount":1999900,"originalCurrency":"VND"}},{"name":"Tayvan","code":"tw","basicYearly":{"usdVal":38.135525834512805,"usd":"38.14","try":"1641.37","originalAmount":1199,"originalCurrency":"TWD"},"basicMonthly":{"usdVal":5.375232582179036,"usd":"5.38","try":"231.35","originalAmount":169,"originalCurrency":"TWD"},"proMonthly":{"usdVal":18.129482673621602,"usd":"18.13","try":"780.30","originalAmount":570,"originalCurrency":"TWD"},"proYearly":{"usdVal":108.10896773270144,"usd":"108.11","try":"4653.07","originalAmount":3399,"originalCurrency":"TWD"}},{"name":"Uruguay","code":"uy","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Yeni Zelanda","code":"nz","basicYearly":{"usdVal":37.4608893906727,"usd":"37.46","try":"1612.34","originalAmount":65,"originalCurrency":"NZD"},"basicMonthly":{"usdVal":5.186892377170065,"usd":"5.19","try":"223.25","originalAmount":9,"originalCurrency":"NZD"},"proMonthly":{"usdVal":15.560677131510197,"usd":"15.56","try":"669.74","originalAmount":27,"originalCurrency":"NZD"},"proYearly":{"usdVal":109.50106129581249,"usd":"109.50","try":"4712.98","originalAmount":190,"originalCurrency":"NZD"}},{"name":"İspanya","code":"es","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Hindistan","code":"in","basicYearly":{"usdVal":27.715029870680272,"usd":"27.72","try":"1192.87","originalAmount":2499,"originalCurrency":"INR"},"basicMonthly":{"usdVal":4.425088802881724,"usd":"4.43","try":"190.46","originalAmount":399,"originalCurrency":"INR"},"proMonthly":{"usdVal":15.79279813359292,"usd":"15.79","try":"679.73","originalAmount":1424,"originalCurrency":"INR"},"proYearly":{"usdVal":94.25771863581897,"usd":"94.26","try":"4056.90","originalAmount":8499,"originalCurrency":"INR"}},{"name":"İsrail","code":"il","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Slovenya","code":"si","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Azerbaycan","code":"az","basicYearly":{"usdVal":22.432875387609286,"usd":"22.43","try":"965.52","originalAmount":1799,"originalCurrency":"RUB"},"basicMonthly":{"usdVal":3.7284212011646343,"usd":"3.73","try":"160.47","originalAmount":299,"originalCurrency":"RUB"},"proMonthly":{"usdVal":12.457166488172138,"usd":"12.46","try":"536.16","originalAmount":999,"originalCurrency":"RUB"},"proYearly":{"usdVal":74.80534710965432,"usd":"74.81","try":"3219.66","originalAmount":5999,"originalCurrency":"RUB"}},{"name":"Mısır","code":"eg","basicYearly":{"usdVal":16.781700779796697,"usd":"16.78","try":"722.29","originalAmount":799,"originalCurrency":"EGP"},"basicMonthly":{"usdVal":2.2893684417995495,"usd":"2.29","try":"98.54","originalAmount":109,"originalCurrency":"EGP"},"proMonthly":{"usdVal":7.120145887798598,"usd":"7.12","try":"306.45","originalAmount":339,"originalCurrency":"EGP"},"proYearly":{"usdVal":39.88541899979215,"usd":"39.89","try":"1716.69","originalAmount":1899,"originalCurrency":"EGP"}},{"name":"Litvanya","code":"lt","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Sri Lanka","code":"lk","basicYearly":{"usdVal":27.715029870680272,"usd":"27.72","try":"1192.87","originalAmount":2499,"originalCurrency":"INR"},"basicMonthly":{"usdVal":4.425088802881724,"usd":"4.43","try":"190.46","originalAmount":399,"originalCurrency":"INR"},"proMonthly":{"usdVal":15.79279813359292,"usd":"15.79","try":"679.73","originalAmount":1424,"originalCurrency":"INR"},"proYearly":{"usdVal":94.25771863581897,"usd":"94.26","try":"4056.90","originalAmount":8499,"originalCurrency":"INR"}},{"name":"Nijerya","code":"ng","basicYearly":{"usdVal":39.41674616215819,"usd":"39.42","try":"1696.52","originalAmount":650,"originalCurrency":"ZAR"},"basicMonthly":{"usdVal":5.457703314760365,"usd":"5.46","try":"234.90","originalAmount":90,"originalCurrency":"ZAR"},"proMonthly":{"usdVal":18.495550122243458,"usd":"18.50","try":"796.06","originalAmount":305,"originalCurrency":"ZAR"},"proYearly":{"usdVal":103.08995150102912,"usd":"103.09","try":"4437.05","originalAmount":1700,"originalCurrency":"ZAR"}},{"name":"Ekvador","code":"ec","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Gana","code":"gh","basicYearly":{"usdVal":39.41674616215819,"usd":"39.42","try":"1696.52","originalAmount":650,"originalCurrency":"ZAR"},"basicMonthly":{"usdVal":5.457703314760365,"usd":"5.46","try":"234.90","originalAmount":90,"originalCurrency":"ZAR"},"proMonthly":{"usdVal":18.495550122243458,"usd":"18.50","try":"796.06","originalAmount":305,"originalCurrency":"ZAR"},"proYearly":{"usdVal":103.08995150102912,"usd":"103.09","try":"4437.05","originalAmount":1700,"originalCurrency":"ZAR"}},{"name":"Güney Kore","code":"kr","basicYearly":{"usdVal":32.54317615350382,"usd":"32.54","try":"1400.68","originalAmount":47000,"originalCurrency":"KRW"},"basicMonthly":{"usdVal":4.846856022862271,"usd":"4.85","try":"208.61","originalAmount":7000,"originalCurrency":"KRW"},"proMonthly":{"usdVal":15.475318872995965,"usd":"15.48","try":"666.07","originalAmount":22350,"originalCurrency":"KRW"},"proYearly":{"usdVal":92.09026443438316,"usd":"92.09","try":"3963.61","originalAmount":133000,"originalCurrency":"KRW"}},{"name":"Romanya","code":"ro","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"ABD","code":"us","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Güney Afrika","code":"za","basicYearly":{"usdVal":39.41674616215819,"usd":"39.42","try":"1696.52","originalAmount":650,"originalCurrency":"ZAR"},"basicMonthly":{"usdVal":5.457703314760365,"usd":"5.46","try":"234.90","originalAmount":90,"originalCurrency":"ZAR"},"proMonthly":{"usdVal":18.495550122243458,"usd":"18.50","try":"796.06","originalAmount":305,"originalCurrency":"ZAR"},"proYearly":{"usdVal":103.08995150102912,"usd":"103.09","try":"4437.05","originalAmount":1700,"originalCurrency":"ZAR"}},{"name":"Slovakya","code":"sk","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"İzlanda","code":"is","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Guatemala","code":"gt","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Polonya","code":"pl","basicYearly":{"usdVal":50.10888940049446,"usd":"50.11","try":"2156.71","originalAmount":180,"originalCurrency":"PLN"},"basicMonthly":{"usdVal":6.959567972290897,"usd":"6.96","try":"299.54","originalAmount":25,"originalCurrency":"PLN"},"proMonthly":{"usdVal":23.662531105789053,"usd":"23.66","try":"1018.45","originalAmount":85,"originalCurrency":"PLN"},"proYearly":{"usdVal":155.8943225793161,"usd":"155.89","try":"6709.77","originalAmount":560,"originalCurrency":"PLN"}},{"name":"Malta","code":"mt","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Tayland","code":"th","basicYearly":{"usdVal":38.10526753361924,"usd":"38.11","try":"1640.07","originalAmount":1199,"originalCurrency":"THB"},"basicMonthly":{"usdVal":6.3243938608759205,"usd":"6.32","try":"272.21","originalAmount":199,"originalCurrency":"THB"},"proMonthly":{"usdVal":21.45208972910174,"usd":"21.45","try":"923.31","originalAmount":675,"originalCurrency":"THB"},"proYearly":{"usdVal":120.73553908275187,"usd":"120.74","try":"5196.52","originalAmount":3799,"originalCurrency":"THB"}},{"name":"İsveç","code":"se","basicYearly":{"usdVal":46.512071671524595,"usd":"46.51","try":"2001.90","originalAmount":429,"originalCurrency":"SEK"},"basicMonthly":{"usdVal":6.396765101678207,"usd":"6.40","try":"275.32","originalAmount":59,"originalCurrency":"SEK"},"proMonthly":{"usdVal":22.22604823464462,"usd":"22.23","try":"956.62","originalAmount":205,"originalCurrency":"SEK"},"proYearly":{"usdVal":135.41626461010307,"usd":"135.42","try":"5828.39","originalAmount":1249,"originalCurrency":"SEK"}},{"name":"Bolivya","code":"bo","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"İngiltere","code":"gb","basicYearly":{"usdVal":48.42185116737013,"usd":"48.42","try":"2084.10","originalAmount":36,"originalCurrency":"GBP"},"basicMonthly":{"usdVal":8.07030852789502,"usd":"8.07","try":"347.35","originalAmount":6,"originalCurrency":"GBP"},"proMonthly":{"usdVal":22.865874162369227,"usd":"22.87","try":"984.16","originalAmount":17,"originalCurrency":"GBP"},"proYearly":{"usdVal":147.95565634474207,"usd":"147.96","try":"6368.09","originalAmount":110,"originalCurrency":"GBP"}},{"name":"Kamboçya","code":"kh","basicYearly":{"usdVal":44.308564845584655,"usd":"44.31","try":"1907.06","originalAmount":57,"originalCurrency":"SGD"},"basicMonthly":{"usdVal":6.996089186144945,"usd":"7.00","try":"301.12","originalAmount":9,"originalCurrency":"SGD"},"proMonthly":{"usdVal":19.433581072624847,"usd":"19.43","try":"836.43","originalAmount":25,"originalCurrency":"SGD"},"proYearly":{"usdVal":124.37491886479903,"usd":"124.37","try":"5353.16","originalAmount":160,"originalCurrency":"SGD"}},{"name":"Malezya","code":"my","basicYearly":{"usdVal":46.86712971390825,"usd":"46.87","try":"2017.19","originalAmount":190,"originalCurrency":"MYR"},"basicMonthly":{"usdVal":6.1667275939352955,"usd":"6.17","try":"265.42","originalAmount":25,"originalCurrency":"MYR"},"proMonthly":{"usdVal":19.733528300592948,"usd":"19.73","try":"849.34","originalAmount":80,"originalCurrency":"MYR"},"proYearly":{"usdVal":123.0878827749485,"usd":"123.09","try":"5297.77","originalAmount":499,"originalCurrency":"MYR"}},{"name":"Hollanda","code":"nl","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Özbekistan","code":"uz","basicYearly":{"usdVal":22.432875387609286,"usd":"22.43","try":"965.52","originalAmount":1799,"originalCurrency":"RUB"},"basicMonthly":{"usdVal":3.7284212011646343,"usd":"3.73","try":"160.47","originalAmount":299,"originalCurrency":"RUB"},"proMonthly":{"usdVal":12.457166488172138,"usd":"12.46","try":"536.16","originalAmount":999,"originalCurrency":"RUB"},"proYearly":{"usdVal":74.80534710965432,"usd":"74.81","try":"3219.66","originalAmount":5999,"originalCurrency":"RUB"}},{"name":"Pakistan","code":"pk","basicYearly":{"usdVal":27.715029870680272,"usd":"27.72","try":"1192.87","originalAmount":2499,"originalCurrency":"INR"},"basicMonthly":{"usdVal":4.425088802881724,"usd":"4.43","try":"190.46","originalAmount":399,"originalCurrency":"INR"},"proMonthly":{"usdVal":15.79279813359292,"usd":"15.79","try":"679.73","originalAmount":1424,"originalCurrency":"INR"},"proYearly":{"usdVal":94.25771863581897,"usd":"94.26","try":"4056.90","originalAmount":8499,"originalCurrency":"INR"}},{"name":"Arnavutluk","code":"al","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Kazakistan","code":"kz","basicYearly":{"usdVal":22.432875387609286,"usd":"22.43","try":"965.52","originalAmount":1799,"originalCurrency":"RUB"},"basicMonthly":{"usdVal":3.7284212011646343,"usd":"3.73","try":"160.47","originalAmount":299,"originalCurrency":"RUB"},"proMonthly":{"usdVal":12.457166488172138,"usd":"12.46","try":"536.16","originalAmount":999,"originalCurrency":"RUB"},"proYearly":{"usdVal":74.80534710965432,"usd":"74.81","try":"3219.66","originalAmount":5999,"originalCurrency":"RUB"}},{"name":"Meksika","code":"mx","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Şili","code":"cl","basicYearly":{"usdVal":37.58281722997493,"usd":"37.58","try":"1617.58","originalAmount":33900,"originalCurrency":"CLP"},"basicMonthly":{"usdVal":5.432324614362158,"usd":"5.43","try":"233.81","originalAmount":4900,"originalCurrency":"CLP"},"proMonthly":{"usdVal":15.410063701966122,"usd":"15.41","try":"663.26","originalAmount":13900,"originalCurrency":"CLP"},"proYearly":{"usdVal":110.752903872404,"usd":"110.75","try":"4766.86","originalAmount":99900,"originalCurrency":"CLP"}},{"name":"Kosta Rika","code":"cr","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Brezilya","code":"br","basicYearly":{"usdVal":36.85485801389539,"usd":"36.85","try":"1586.25","originalAmount":200,"originalCurrency":"BRL"}},{"name":"Kolombiya","code":"co","basicYearly":{"usdVal":42.4159005927827,"usd":"42.42","try":"1825.60","originalAmount":159999,"originalCurrency":"COP"},"basicMonthly":{"usdVal":6.362159753037156,"usd":"6.36","try":"273.83","originalAmount":23999,"originalCurrency":"COP"},"proMonthly":{"usdVal":22.79842395939174,"usd":"22.80","try":"981.26","originalAmount":85999,"originalCurrency":"COP"},"proYearly":{"usdVal":125.39252473131471,"usd":"125.39","try":"5396.96","originalAmount":472999,"originalCurrency":"COP"}},{"name":"Paraguay","code":"py","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Suudi Arabistan","code":"sa","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Hırvatistan","code":"hr","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Lüksemburg","code":"lu","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"İsviçre","code":"ch","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Kanada","code":"ca","basicYearly":{"usdVal":40.04228465259314,"usd":"40.04","try":"1723.44","originalAmount":55,"originalCurrency":"CAD"},"basicMonthly":{"usdVal":5.824332313104456,"usd":"5.82","try":"250.68","originalAmount":8,"originalCurrency":"CAD"},"proMonthly":{"usdVal":16.74495540017531,"usd":"16.74","try":"720.71","originalAmount":23,"originalCurrency":"CAD"},"proYearly":{"usdVal":109.20623087070855,"usd":"109.21","try":"4700.29","originalAmount":150,"originalCurrency":"CAD"}},{"name":"Nepal","code":"np","basicYearly":{"usdVal":27.715029870680272,"usd":"27.72","try":"1192.87","originalAmount":2499,"originalCurrency":"INR"},"basicMonthly":{"usdVal":4.425088802881724,"usd":"4.43","try":"190.46","originalAmount":399,"originalCurrency":"INR"},"proMonthly":{"usdVal":15.79279813359292,"usd":"15.79","try":"679.73","originalAmount":1424,"originalCurrency":"INR"},"proYearly":{"usdVal":94.25771863581897,"usd":"94.26","try":"4056.90","originalAmount":8499,"originalCurrency":"INR"}},{"name":"Norveç","code":"no","basicYearly":{"usdVal":39.628327997413734,"usd":"39.63","try":"1705.62","originalAmount":399,"originalCurrency":"NOK"},"basicMonthly":{"usdVal":5.8598279494922565,"usd":"5.86","try":"252.21","originalAmount":59,"originalCurrency":"NOK"},"proMonthly":{"usdVal":18.175398555204794,"usd":"18.18","try":"782.28","originalAmount":183,"originalCurrency":"NOK"},"proYearly":{"usdVal":119.0836222278172,"usd":"119.08","try":"5125.42","originalAmount":1199,"originalCurrency":"NOK"}},{"name":"Avustralya","code":"au","basicYearly":{"usdVal":40.11196586739118,"usd":"40.11","try":"1726.44","originalAmount":60,"originalCurrency":"AUD"},"basicMonthly":{"usdVal":6.016794880108677,"usd":"6.02","try":"258.97","originalAmount":9,"originalCurrency":"AUD"},"proMonthly":{"usdVal":16.713319111412993,"usd":"16.71","try":"719.35","originalAmount":25,"originalCurrency":"AUD"},"proYearly":{"usdVal":106.96524231304315,"usd":"106.97","try":"4603.84","originalAmount":160,"originalCurrency":"AUD"}},{"name":"Peru","code":"pe","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Panama","code":"pa","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Japonya","code":"jp","basicYearly":{"usdVal":38.25356340071961,"usd":"38.25","try":"1646.45","originalAmount":6000,"originalCurrency":"JPY"},"basicMonthly":{"usdVal":5.738034510107941,"usd":"5.74","try":"246.97","originalAmount":900,"originalCurrency":"JPY"},"proMonthly":{"usdVal":15.938984750299834,"usd":"15.94","try":"686.02","originalAmount":2500,"originalCurrency":"JPY"},"proYearly":{"usdVal":111.57289325209885,"usd":"111.57","try":"4802.16","originalAmount":17500,"originalCurrency":"JPY"}},{"name":"Arjantin","code":"ar","basicYearly":{"usdVal":40,"usd":"40.00","try":"1721.62","originalAmount":40,"originalCurrency":"USD"},"basicMonthly":{"usdVal":6,"usd":"6.00","try":"258.24","originalAmount":6,"originalCurrency":"USD"},"proMonthly":{"usdVal":17,"usd":"17.00","try":"731.69","originalAmount":17,"originalCurrency":"USD"},"proYearly":{"usdVal":120,"usd":"120.00","try":"5164.86","originalAmount":120,"originalCurrency":"USD"}},{"name":"Hong Kong","code":"hk","basicYearly":{"usdVal":40.94346054641936,"usd":"40.94","try":"1762.23","originalAmount":319,"originalCurrency":"HKD"},"basicMonthly":{"usdVal":6.289120898979776,"usd":"6.29","try":"270.69","originalAmount":49,"originalCurrency":"HKD"},"proMonthly":{"usdVal":17.58386863592305,"usd":"17.58","try":"756.82","originalAmount":137,"originalCurrency":"HKD"},"proYearly":{"usdVal":119.2365982684125,"usd":"119.24","try":"5132.01","originalAmount":929,"originalCurrency":"HKD"}},{"name":"Çin","code":"cn","basicYearly":{"usdVal":40.94346054641936,"usd":"40.94","try":"1762.23","originalAmount":319,"originalCurrency":"HKD"},"basicMonthly":{"usdVal":6.289120898979776,"usd":"6.29","try":"270.69","originalAmount":49,"originalCurrency":"HKD"},"proMonthly":{"usdVal":17.58386863592305,"usd":"17.58","try":"756.82","originalAmount":137,"originalCurrency":"HKD"},"proYearly":{"usdVal":119.2365982684125,"usd":"119.24","try":"5132.01","originalAmount":929,"originalCurrency":"HKD"}},{"name":"Kenya","code":"ke","basicYearly":{"usdVal":39.41674616215819,"usd":"39.42","try":"1696.52","originalAmount":650,"originalCurrency":"ZAR"},"basicMonthly":{"usdVal":5.457703314760365,"usd":"5.46","try":"234.90","originalAmount":90,"originalCurrency":"ZAR"},"proMonthly":{"usdVal":18.495550122243458,"usd":"18.50","try":"796.06","originalAmount":305,"originalCurrency":"ZAR"},"proYearly":{"usdVal":103.08995150102912,"usd":"103.09","try":"4437.05","originalAmount":1700,"originalCurrency":"ZAR"}},{"name":"Almanya","code":"de","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Danimarka","code":"dk","basicYearly":{"usdVal":46.95269178682787,"usd":"46.95","try":"2020.87","originalAmount":299,"originalCurrency":"DKK"},"basicMonthly":{"usdVal":7.694588286135671,"usd":"7.69","try":"331.18","originalAmount":49,"originalCurrency":"DKK"},"proMonthly":{"usdVal":21.199375890373787,"usd":"21.20","try":"912.43","originalAmount":135,"originalCurrency":"DKK"},"proYearly":{"usdVal":141.17214018848915,"usd":"141.17","try":"6076.12","originalAmount":899,"originalCurrency":"DKK"}},{"name":"Finlandiya","code":"fi","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Çekya","code":"cz","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}},{"name":"Portekiz","code":"pt","basicYearly":{"usdVal":46.86013655043791,"usd":"46.86","try":"2016.88","originalAmount":40,"originalCurrency":"EUR"},"basicMonthly":{"usdVal":7.029020482565686,"usd":"7.03","try":"302.53","originalAmount":6,"originalCurrency":"EUR"},"proMonthly":{"usdVal":19.91555803393611,"usd":"19.92","try":"857.18","originalAmount":17,"originalCurrency":"EUR"},"proYearly":{"usdVal":140.58040965131372,"usd":"140.58","try":"6050.65","originalAmount":120,"originalCurrency":"EUR"}}];
+        currentData = STATIC_DATA; // Initialize immediately
+
+        // Override Init for Offline Mode
+        const originalInit = init;
+        init = async function() {
+            try {
+                // Manually run localization once DOM is ready
+                applyLocalization();
+            } catch(e) { console.log(e); }
+            
+            // Render what we have
+            renderTable();
+            updateLowestPrice();
+            
+            // Disable Polling
+            startPolling = function() {};
+            
+            // Update UI - Wait a tick for DOM
+            setTimeout(() => {
+                // Remove Refresh Logic
+                const btn = document.getElementById('refreshBtn');
+                if(btn) {
+                    const badge = document.createElement('div');
+                    badge.className = "flex items-center gap-2 px-3 py-2 text-xs font-medium text-text-subtle bg-white/5 rounded-lg border border-white/5 cursor-help transition-colors hover:bg-white/10";
+                    badge.innerHTML = `<span class="material-symbols-outlined text-[16px]">history</span><span>05.01.2026 04:16:02</span><span class="material-symbols-outlined text-[16px] text-yellow-500 ml-1">info</span>`;
+                    badge.title = "Sunucu şu an aktif değil. Veriler statik."; 
+                    badge.addEventListener('mouseenter', (e) => showTooltip(e, "Sunucu şu an aktif değil. Veriler statik."));
+                    badge.addEventListener('mouseleave', hideTooltip);
+                    btn.replaceWith(badge);
+                }
+
+                const ind = document.getElementById('statusIndicator');
+                if(ind) ind.classList.add('hidden');
+            }, 100);
+        };
+        
+        // Disable Fetch
+        async function fetchData() { return; }
+        async function triggerRefresh() { return; }
+        
+        window.addEventListener('load', () => { });
+        
+        let activeTab = 'proYearly';
+        let activeTabName = 'Pro Yearly';
+        let isScanning = false;
+        let scanInterval;
+        let regionNames = new Intl.DisplayNames(['tr'], { type: 'region' });
 
         // FILTER & SORT STATE
         let searchTerm = '';
@@ -383,11 +427,11 @@
             return 'EN';
         }
 
-        function diliDegistir(dil) {
-            userLang = dil;
-            yerellestirmeyiUygula();
-            tabloyuCiz();
-            enDusukFiyatiGuncelle();
+        function changeLanguage(lang) {
+            userLang = lang;
+            applyLocalization();
+            renderTable();
+            updateLowestPrice();
         }
 
         function applyLocalization() {
@@ -528,7 +572,7 @@
                 const yourPriceTh = document.querySelector('[data-i18n="th_your_price"]');
                 if (yourPriceTh) yourPriceTh.textContent = `${t.th_your_price} (${userCurrency})`;
 
-                sorgulamayiBaslat();
+                startPolling();
 
             } catch (e) {
                 console.error("Init CRITICAL failure:", e);
@@ -536,9 +580,9 @@
             }
         }
 
-        function sorgulamayiBaslat() {
-            veriyiCek();
-            taramaSayaci = setInterval(veriyiCek, 1000);
+        function startPolling() {
+            fetchData();
+            scanInterval = setInterval(fetchData, 1000);
         }
 
         async function triggerRefresh() {
@@ -583,52 +627,59 @@
             }, 2000);
         }
 
-        async function veriyiCek() {
+        async function fetchData() {
             try {
-                const cevap = await fetch('/api/prices');
-                const veri = await cevap.json();
+                const res = await fetch('/api/prices');
+                const data = await res.json();
 
-                // FLICKER FIX: Uzunluk değiştiyse render et
-                // mevcutVeri'yi render için kullanıyoruz.
-                const oncekiUzunluk = mevcutVeri.length;
-                const yeniUzunluk = veri.successful.length;
+                // FLICKER FIX: Check if data length changed or completion changed BEFORE rendering
+                // We use currentData for rendering. checking deep equality is expensive.
+                // Just checking length and last element is usually enough for a "stream".
+                const prevLen = currentData.length;
+                const newLen = data.successful.length;
 
-                // İç durumu güncelle
-                mevcutVeri = veri.successful;
-                const tamamlanan = veri.completed;
-                const toplam = veri.total;
-                const sunucuTariyorMu = veri.isScanning;
+                // Update internal state
+                currentData = data.successful;
+                const completed = data.completed;
+                const total = data.total;
+                const isServerScanning = data.isScanning;
 
-                // Tarama Durumunu Eşitle
-                if (sunucuTariyorMu && !taramaYapiliyorMu) {
-                    taramaYapiliyorMu = true;
+                // Sync Scanning State
+                if (isServerScanning && !isScanning) {
+                    isScanning = true;
                     refreshBtn.disabled = true;
                     refreshIcon.classList.add('animate-spin');
                     statusIndicator.classList.remove('hidden');
                     statusIndicator.classList.add('flex');
-                } else if (taramaYapiliyorMu && !sunucuTariyorMu && tamamlanan >= toplam) {
-                    taramaYapiliyorMu = false;
-                    yenilemeArayuzunuDurdur();
+                } else if (isScanning && !isServerScanning && completed >= total) {
+                    isScanning = false;
+                    stopRefreshUI();
                     const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
                     statusText.textContent = t.status_complete;
                 }
 
-                if (taramaYapiliyorMu) {
-                    const yuzde = Math.round((tamamlanan / toplam) * 100);
-                    progressBar.style.width = `${yuzde}%`;
-                    progressText.textContent = `${yuzde}%`;
+                if (isScanning) {
+                    const percent = Math.round((completed / total) * 100);
+                    progressBar.style.width = `${percent}%`;
+                    progressText.textContent = `${percent}%`;
                     const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
-                    statusText.textContent = `${t.status_scanning} (${tamamlanan}/${toplam})`;
+                    statusText.textContent = `${t.status_scanning} (${completed}/${total})`;
                 }
 
-                // SADECE VERİ DEĞİŞTİYSE ÇİZ
-                if (yeniUzunluk !== oncekiUzunluk || oncekiUzunluk === 0 || searchTerm !== '') {
-                    tabloyuCiz();
-                    enDusukFiyatiGuncelle();
+                // ONLY RENDER IF DATA CHANGED OR IF IT'S INITIAL LOAD
+                if (newLen !== prevLen || prevLen === 0 || searchTerm !== '') {
+                    renderTable();
+                    updateLowestPrice();
+                } else {
+                    // Even if length is same, check if last item is different (maybe same length but replaced?)
+                    // For this app, it usually just appends.
+                    // But we should update lowest price just in case.
+                    // The "Flashing" hover happens because we wipe innerHTML.
+                    // If we skipped renderTable, the hover stays intact.
                 }
 
-            } catch (hata) {
-                console.error("Fetch hatası:", hata);
+            } catch (e) {
+                console.error("Fetch error:", e);
             }
         }
 
@@ -654,139 +705,140 @@
             if (tooltipEl.classList.contains('visible')) moveTooltip(e);
         });
 
-        // TABLOYU ÇİZ
-        function tabloyuCiz() {
-            // 1. FİLTRELEME & HAZIRLIK
-            let gecerliOgeler = mevcutVeri
-                .filter(oge => oge[aktifSekme])
-                .map(oge => {
-                    let gorunenIsim = oge.name;
-                    // Dinamik çeviri dene
-                    try { if (oge.code) gorunenIsim = bolgeIsimleri.of(oge.code.toUpperCase()); } catch (e) { }
+        // RENDER
+        function renderTable() {
+            // 1. FILTER & PREPARE
+            let validItems = currentData
+                .filter(item => item[activeTab])
+                .map(item => {
+                    let displayName = item.name;
+                    // Try dynamic translation
+                    try { if (item.code) displayName = regionNames.of(item.code.toUpperCase()); } catch (e) { }
 
                     return {
-                        country: oge,
-                        price: oge[aktifSekme],
-                        displayName: gorunenIsim,
-                        usdVal: oge[aktifSekme].usdVal
+                        country: item,
+                        price: item[activeTab],
+                        displayName: displayName,
+                        usdVal: item[activeTab].usdVal
                     };
                 });
 
-            // 2. ARAMA
+            // 2. SEARCH
             if (searchTerm) {
                 const lower = searchTerm.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en');
-                gecerliOgeler = gecerliOgeler.filter(i => i.displayName.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en').includes(lower));
+                validItems = validItems.filter(i => i.displayName.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en').includes(lower));
             }
 
-            // 3. SIRALAMA
-            gecerliOgeler.sort((a, b) => {
+            // 3. SORT
+            validItems.sort((a, b) => {
                 if (sortOrder === 'priceAsc') return a.usdVal - b.usdVal;
                 if (sortOrder === 'priceDesc') return b.usdVal - a.usdVal;
                 if (sortOrder === 'nameAsc') return a.displayName.localeCompare(b.displayName, userLang === 'TR' ? 'tr' : 'en');
                 return 0;
             });
 
-            // 4. GRUPLAMA
-            const gruplar = [];
-            gecerliOgeler.forEach(oge => {
-                const sonGrup = gruplar[gruplar.length - 1];
-                // Sadece Fiyat Sıralamasında sıkı gruplama
-                const fiyataGoreMi = (sortOrder === 'priceAsc' || sortOrder === 'priceDesc');
+            // 4. GROUPING
+            const groups = [];
+            validItems.forEach(item => {
+                const lastGroup = groups[groups.length - 1];
+                // Strict grouping only on Price Sort
+                const isPriceSort = (sortOrder === 'priceAsc' || sortOrder === 'priceDesc');
 
-                if (sonGrup && fiyataGoreMi && Math.abs(sonGrup.price.usdVal - oge.usdVal) < 0.1) {
-                    sonGrup.countries.push(oge);
+                if (lastGroup && isPriceSort && Math.abs(lastGroup.price.usdVal - item.usdVal) < 0.1) {
+                    lastGroup.countries.push(item);
                 } else {
-                    gruplar.push({
-                        price: oge.price,
-                        countries: [oge],
-                        id: oge.country.code
+                    groups.push({
+                        price: item.price,
+                        countries: [item],
+                        id: item.country.code // Simple ID
                     });
                 }
             });
 
-            // 5. RENDERING (DOM'a Basma)
-            const mevcutSatirlar = Array.from(tbody.children);
-            const parca = document.createDocumentFragment();
+            // 5. RENDER
+            const existingRows = Array.from(tbody.children);
+            const fragment = document.createDocumentFragment();
 
-            gruplar.forEach((grup, indeks) => {
-                const enUcuzMu = (indeks === 0 && sortOrder === 'priceAsc' && !searchTerm);
+            groups.forEach((group, index) => {
+                const isLowest = (index === 0 && sortOrder === 'priceAsc' && !searchTerm);
 
-                // ID oluştur
-                const grupId = grup.price.usdVal.toFixed(2) + '_' + grup.countries[0].country.code;
+                // Construct ID (if grouping, use first country code + price)
+                const groupId = group.price.usdVal.toFixed(2) + '_' + group.countries[0].country.code;
 
-                let tr = mevcutSatirlar.find(row => row.getAttribute('data-price-id') === grupId);
-                let yeniMi = false;
-                const gecikme = (indeks * 0.03) + 's';
+                let tr = existingRows.find(row => row.getAttribute('data-price-id') === groupId);
+                let isNew = false;
+                const staggerDelay = (index * 0.03) + 's';
 
                 if (!tr) {
                     tr = document.createElement('tr');
-                    tr.setAttribute('data-price-id', grupId);
+                    tr.setAttribute('data-price-id', groupId);
                     tr.classList.add('animate-slide-in');
-                    tr.style.animationDelay = gecikme;
-                    yeniMi = true;
+                    tr.style.animationDelay = staggerDelay;
+                    isNew = true;
                 }
 
-                const temelSinif = enUcuzMu
+                const baseClass = isLowest
                     ? "bg-primary/5 hover:bg-primary/10 transition-colors"
                     : "hover:bg-gray-50 dark:hover:bg-surface-active-dark transition-colors";
 
-                tr.className = temelSinif + (yeniMi ? " animate-slide-in" : "");
+                tr.className = baseClass + (isNew ? " animate-slide-in" : "");
 
-                // İçerik
-                let yerelFiyat;
-                if (grup.price.originalCurrency === userCurrency) {
-                    yerelFiyat = grup.price.originalAmount.toLocaleString();
+                // Content
+                let localPrice;
+                if (group.price.originalCurrency === userCurrency) {
+                    localPrice = group.price.originalAmount.toLocaleString();
                 } else {
-                    yerelFiyat = convert(grup.price.usdVal);
+                    localPrice = convert(group.price.usdVal);
                 }
 
                 const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
 
-                const ulkelerHtml = grup.countries.map(obj => {
+                const countriesHtml = group.countries.map(obj => {
                     const c = obj.country;
                     const dName = obj.displayName;
-                    const misirMi = c.code === 'eg';
-                    const uyariHtml = misirMi ? `<span class="material-symbols-outlined text-yellow-500 text-[18px] cursor-help animate-pulse-warning ml-1" onmouseenter="showTooltip(event, '${t.warning_egypt}')" onmouseleave="hideTooltip()">warning</span>` : '';
+                    const isEgypt = c.code === 'eg';
+                    const warningHtml = isEgypt ? `<span class="material-symbols-outlined text-yellow-500 text-[18px] cursor-help animate-pulse-warning ml-1" onmouseenter="showTooltip(event, '${t.warning_egypt}')" onmouseleave="hideTooltip()">warning</span>` : '';
 
                     return `
                     <div class="flex items-center gap-2 mb-1 mr-4">
                         <img src="https://flagcdn.com/24x18/${c.code}.png" class="rounded-sm shadow-sm opacity-80" alt="${dName}">
-                        <span class="${enUcuzMu ? 'font-bold' : ''}">${dName}</span>
-                        ${uyariHtml}
+                        <span class="${isLowest ? 'font-bold' : ''}">${dName}</span>
+                        ${warningHtml}
                     </div>`
                 }).join('');
 
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <div class="flex flex-wrap items-center">
-                            ${ulkelerHtml}
-                            ${grup.countries.length > 1 ? `<span class="text-xs text-gray-400 ml-1">(${grup.countries.length} ${t.regions_count})</span>` : ''}
-                            ${enUcuzMu ? `<span class="ml-2 text-[10px] font-bold text-primary uppercase tracking-wide border border-primary/30 px-1 rounded">${t.best_badge}</span>` : ''}
+                            ${countriesHtml}
+                            ${group.countries.length > 1 ? `<span class="text-xs text-gray-400 ml-1">(${group.countries.length} ${t.regions_count})</span>` : ''}
+                            ${isLowest ? `<span class="ml-2 text-[10px] font-bold text-primary uppercase tracking-wide border border-primary/30 px-1 rounded">${t.best_badge}</span>` : ''}
                         </div>
                     </td>
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-500">${grup.price.originalAmount} ${grup.price.originalCurrency}</td>
-                    <td class="whitespace-nowrap px-6 py-4 font-medium ${enUcuzMu ? 'text-primary text-lg' : ''}">${yerelFiyat} ${userCurrency}</td>
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-400">$${grup.price.usd}</td>
+                    <td class="whitespace-nowrap px-6 py-4 text-gray-500">${group.price.originalAmount} ${group.price.originalCurrency}</td>
+                    <td class="whitespace-nowrap px-6 py-4 font-medium ${isLowest ? 'text-primary text-lg' : ''}">${localPrice} ${userCurrency}</td>
+                    <td class="whitespace-nowrap px-6 py-4 text-gray-400">$${group.price.usd}</td>
                 `;
 
-                parca.appendChild(tr);
+                fragment.appendChild(tr);
             });
 
             tbody.innerHTML = '';
-            tbody.appendChild(parca);
+            tbody.appendChild(fragment);
         }
-        function basligiGuncelle() {
+        function updateHeaderLabel() {
             const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
-            const tabKey = 'tab_' + aktifSekme;
-            const cevirilmisSekmeIsmi = t[tabKey] || aktifSekmeIsmi;
+            // Get translated tab name
+            const tabKey = 'tab_' + activeTab;
+            const translatedTabName = t[tabKey] || activeTabName;
 
-            lowestLabelEl.textContent = `${t.lowest_label} ${cevirilmisSekmeIsmi.toUpperCase()}`;
+            lowestLabelEl.textContent = `${t.lowest_label} ${translatedTabName.toUpperCase()}`;
         }
 
-        function enDusukFiyatiGuncelle() {
-            basligiGuncelle();
+        function updateLowestPrice() {
+            updateHeaderLabel();
 
-            if (mevcutVeri.length === 0) {
+            if (currentData.length === 0) {
                 lowestPriceEl.textContent = '--';
                 lowestCountryEl.textContent = '--';
                 return;

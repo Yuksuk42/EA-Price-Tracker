@@ -367,12 +367,12 @@
         const tooltipEl = document.getElementById('customTooltip');
         const rateWarningEl = document.getElementById('rateWarning');
 
-        let mevcutVeri = [];
-        let aktifSekme = 'proYearly';
-        let aktifSekmeIsmi = 'Pro Yearly';
-        let taramaYapiliyorMu = false;
-        let taramaSayaci;
-        let bolgeIsimleri = new Intl.DisplayNames(['tr'], { type: 'region' });
+        let currentData = [];
+        let activeTab = 'proYearly';
+        let activeTabName = 'Pro Yearly';
+        let isScanning = false;
+        let scanInterval;
+        let regionNames = new Intl.DisplayNames(['tr'], { type: 'region' });
 
         // FILTER & SORT STATE
         let searchTerm = '';
@@ -383,11 +383,11 @@
             return 'EN';
         }
 
-        function diliDegistir(dil) {
-            userLang = dil;
-            yerellestirmeyiUygula();
-            tabloyuCiz();
-            enDusukFiyatiGuncelle();
+        function changeLanguage(lang) {
+            userLang = lang;
+            applyLocalization();
+            renderTable();
+            updateLowestPrice();
         }
 
         function applyLocalization() {
@@ -528,7 +528,7 @@
                 const yourPriceTh = document.querySelector('[data-i18n="th_your_price"]');
                 if (yourPriceTh) yourPriceTh.textContent = `${t.th_your_price} (${userCurrency})`;
 
-                sorgulamayiBaslat();
+                startPolling();
 
             } catch (e) {
                 console.error("Init CRITICAL failure:", e);
@@ -536,9 +536,9 @@
             }
         }
 
-        function sorgulamayiBaslat() {
-            veriyiCek();
-            taramaSayaci = setInterval(veriyiCek, 1000);
+        function startPolling() {
+            fetchData();
+            scanInterval = setInterval(fetchData, 1000);
         }
 
         async function triggerRefresh() {
@@ -583,52 +583,59 @@
             }, 2000);
         }
 
-        async function veriyiCek() {
+        async function fetchData() {
             try {
-                const cevap = await fetch('/api/prices');
-                const veri = await cevap.json();
+                const res = await fetch('/api/prices');
+                const data = await res.json();
 
-                // FLICKER FIX: Uzunluk değiştiyse render et
-                // mevcutVeri'yi render için kullanıyoruz.
-                const oncekiUzunluk = mevcutVeri.length;
-                const yeniUzunluk = veri.successful.length;
+                // FLICKER FIX: Check if data length changed or completion changed BEFORE rendering
+                // We use currentData for rendering. checking deep equality is expensive.
+                // Just checking length and last element is usually enough for a "stream".
+                const prevLen = currentData.length;
+                const newLen = data.successful.length;
 
-                // İç durumu güncelle
-                mevcutVeri = veri.successful;
-                const tamamlanan = veri.completed;
-                const toplam = veri.total;
-                const sunucuTariyorMu = veri.isScanning;
+                // Update internal state
+                currentData = data.successful;
+                const completed = data.completed;
+                const total = data.total;
+                const isServerScanning = data.isScanning;
 
-                // Tarama Durumunu Eşitle
-                if (sunucuTariyorMu && !taramaYapiliyorMu) {
-                    taramaYapiliyorMu = true;
+                // Sync Scanning State
+                if (isServerScanning && !isScanning) {
+                    isScanning = true;
                     refreshBtn.disabled = true;
                     refreshIcon.classList.add('animate-spin');
                     statusIndicator.classList.remove('hidden');
                     statusIndicator.classList.add('flex');
-                } else if (taramaYapiliyorMu && !sunucuTariyorMu && tamamlanan >= toplam) {
-                    taramaYapiliyorMu = false;
-                    yenilemeArayuzunuDurdur();
+                } else if (isScanning && !isServerScanning && completed >= total) {
+                    isScanning = false;
+                    stopRefreshUI();
                     const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
                     statusText.textContent = t.status_complete;
                 }
 
-                if (taramaYapiliyorMu) {
-                    const yuzde = Math.round((tamamlanan / toplam) * 100);
-                    progressBar.style.width = `${yuzde}%`;
-                    progressText.textContent = `${yuzde}%`;
+                if (isScanning) {
+                    const percent = Math.round((completed / total) * 100);
+                    progressBar.style.width = `${percent}%`;
+                    progressText.textContent = `${percent}%`;
                     const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
-                    statusText.textContent = `${t.status_scanning} (${tamamlanan}/${toplam})`;
+                    statusText.textContent = `${t.status_scanning} (${completed}/${total})`;
                 }
 
-                // SADECE VERİ DEĞİŞTİYSE ÇİZ
-                if (yeniUzunluk !== oncekiUzunluk || oncekiUzunluk === 0 || searchTerm !== '') {
-                    tabloyuCiz();
-                    enDusukFiyatiGuncelle();
+                // ONLY RENDER IF DATA CHANGED OR IF IT'S INITIAL LOAD
+                if (newLen !== prevLen || prevLen === 0 || searchTerm !== '') {
+                    renderTable();
+                    updateLowestPrice();
+                } else {
+                    // Even if length is same, check if last item is different (maybe same length but replaced?)
+                    // For this app, it usually just appends.
+                    // But we should update lowest price just in case.
+                    // The "Flashing" hover happens because we wipe innerHTML.
+                    // If we skipped renderTable, the hover stays intact.
                 }
 
-            } catch (hata) {
-                console.error("Fetch hatası:", hata);
+            } catch (e) {
+                console.error("Fetch error:", e);
             }
         }
 
@@ -654,139 +661,140 @@
             if (tooltipEl.classList.contains('visible')) moveTooltip(e);
         });
 
-        // TABLOYU ÇİZ
-        function tabloyuCiz() {
-            // 1. FİLTRELEME & HAZIRLIK
-            let gecerliOgeler = mevcutVeri
-                .filter(oge => oge[aktifSekme])
-                .map(oge => {
-                    let gorunenIsim = oge.name;
-                    // Dinamik çeviri dene
-                    try { if (oge.code) gorunenIsim = bolgeIsimleri.of(oge.code.toUpperCase()); } catch (e) { }
+        // RENDER
+        function renderTable() {
+            // 1. FILTER & PREPARE
+            let validItems = currentData
+                .filter(item => item[activeTab])
+                .map(item => {
+                    let displayName = item.name;
+                    // Try dynamic translation
+                    try { if (item.code) displayName = regionNames.of(item.code.toUpperCase()); } catch (e) { }
 
                     return {
-                        country: oge,
-                        price: oge[aktifSekme],
-                        displayName: gorunenIsim,
-                        usdVal: oge[aktifSekme].usdVal
+                        country: item,
+                        price: item[activeTab],
+                        displayName: displayName,
+                        usdVal: item[activeTab].usdVal
                     };
                 });
 
-            // 2. ARAMA
+            // 2. SEARCH
             if (searchTerm) {
                 const lower = searchTerm.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en');
-                gecerliOgeler = gecerliOgeler.filter(i => i.displayName.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en').includes(lower));
+                validItems = validItems.filter(i => i.displayName.toLocaleLowerCase(userLang === 'TR' ? 'tr' : 'en').includes(lower));
             }
 
-            // 3. SIRALAMA
-            gecerliOgeler.sort((a, b) => {
+            // 3. SORT
+            validItems.sort((a, b) => {
                 if (sortOrder === 'priceAsc') return a.usdVal - b.usdVal;
                 if (sortOrder === 'priceDesc') return b.usdVal - a.usdVal;
                 if (sortOrder === 'nameAsc') return a.displayName.localeCompare(b.displayName, userLang === 'TR' ? 'tr' : 'en');
                 return 0;
             });
 
-            // 4. GRUPLAMA
-            const gruplar = [];
-            gecerliOgeler.forEach(oge => {
-                const sonGrup = gruplar[gruplar.length - 1];
-                // Sadece Fiyat Sıralamasında sıkı gruplama
-                const fiyataGoreMi = (sortOrder === 'priceAsc' || sortOrder === 'priceDesc');
+            // 4. GROUPING
+            const groups = [];
+            validItems.forEach(item => {
+                const lastGroup = groups[groups.length - 1];
+                // Strict grouping only on Price Sort
+                const isPriceSort = (sortOrder === 'priceAsc' || sortOrder === 'priceDesc');
 
-                if (sonGrup && fiyataGoreMi && Math.abs(sonGrup.price.usdVal - oge.usdVal) < 0.1) {
-                    sonGrup.countries.push(oge);
+                if (lastGroup && isPriceSort && Math.abs(lastGroup.price.usdVal - item.usdVal) < 0.1) {
+                    lastGroup.countries.push(item);
                 } else {
-                    gruplar.push({
-                        price: oge.price,
-                        countries: [oge],
-                        id: oge.country.code
+                    groups.push({
+                        price: item.price,
+                        countries: [item],
+                        id: item.country.code // Simple ID
                     });
                 }
             });
 
-            // 5. RENDERING (DOM'a Basma)
-            const mevcutSatirlar = Array.from(tbody.children);
-            const parca = document.createDocumentFragment();
+            // 5. RENDER
+            const existingRows = Array.from(tbody.children);
+            const fragment = document.createDocumentFragment();
 
-            gruplar.forEach((grup, indeks) => {
-                const enUcuzMu = (indeks === 0 && sortOrder === 'priceAsc' && !searchTerm);
+            groups.forEach((group, index) => {
+                const isLowest = (index === 0 && sortOrder === 'priceAsc' && !searchTerm);
 
-                // ID oluştur
-                const grupId = grup.price.usdVal.toFixed(2) + '_' + grup.countries[0].country.code;
+                // Construct ID (if grouping, use first country code + price)
+                const groupId = group.price.usdVal.toFixed(2) + '_' + group.countries[0].country.code;
 
-                let tr = mevcutSatirlar.find(row => row.getAttribute('data-price-id') === grupId);
-                let yeniMi = false;
-                const gecikme = (indeks * 0.03) + 's';
+                let tr = existingRows.find(row => row.getAttribute('data-price-id') === groupId);
+                let isNew = false;
+                const staggerDelay = (index * 0.03) + 's';
 
                 if (!tr) {
                     tr = document.createElement('tr');
-                    tr.setAttribute('data-price-id', grupId);
+                    tr.setAttribute('data-price-id', groupId);
                     tr.classList.add('animate-slide-in');
-                    tr.style.animationDelay = gecikme;
-                    yeniMi = true;
+                    tr.style.animationDelay = staggerDelay;
+                    isNew = true;
                 }
 
-                const temelSinif = enUcuzMu
+                const baseClass = isLowest
                     ? "bg-primary/5 hover:bg-primary/10 transition-colors"
                     : "hover:bg-gray-50 dark:hover:bg-surface-active-dark transition-colors";
 
-                tr.className = temelSinif + (yeniMi ? " animate-slide-in" : "");
+                tr.className = baseClass + (isNew ? " animate-slide-in" : "");
 
-                // İçerik
-                let yerelFiyat;
-                if (grup.price.originalCurrency === userCurrency) {
-                    yerelFiyat = grup.price.originalAmount.toLocaleString();
+                // Content
+                let localPrice;
+                if (group.price.originalCurrency === userCurrency) {
+                    localPrice = group.price.originalAmount.toLocaleString();
                 } else {
-                    yerelFiyat = convert(grup.price.usdVal);
+                    localPrice = convert(group.price.usdVal);
                 }
 
                 const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
 
-                const ulkelerHtml = grup.countries.map(obj => {
+                const countriesHtml = group.countries.map(obj => {
                     const c = obj.country;
                     const dName = obj.displayName;
-                    const misirMi = c.code === 'eg';
-                    const uyariHtml = misirMi ? `<span class="material-symbols-outlined text-yellow-500 text-[18px] cursor-help animate-pulse-warning ml-1" onmouseenter="showTooltip(event, '${t.warning_egypt}')" onmouseleave="hideTooltip()">warning</span>` : '';
+                    const isEgypt = c.code === 'eg';
+                    const warningHtml = isEgypt ? `<span class="material-symbols-outlined text-yellow-500 text-[18px] cursor-help animate-pulse-warning ml-1" onmouseenter="showTooltip(event, '${t.warning_egypt}')" onmouseleave="hideTooltip()">warning</span>` : '';
 
                     return `
                     <div class="flex items-center gap-2 mb-1 mr-4">
                         <img src="https://flagcdn.com/24x18/${c.code}.png" class="rounded-sm shadow-sm opacity-80" alt="${dName}">
-                        <span class="${enUcuzMu ? 'font-bold' : ''}">${dName}</span>
-                        ${uyariHtml}
+                        <span class="${isLowest ? 'font-bold' : ''}">${dName}</span>
+                        ${warningHtml}
                     </div>`
                 }).join('');
 
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <div class="flex flex-wrap items-center">
-                            ${ulkelerHtml}
-                            ${grup.countries.length > 1 ? `<span class="text-xs text-gray-400 ml-1">(${grup.countries.length} ${t.regions_count})</span>` : ''}
-                            ${enUcuzMu ? `<span class="ml-2 text-[10px] font-bold text-primary uppercase tracking-wide border border-primary/30 px-1 rounded">${t.best_badge}</span>` : ''}
+                            ${countriesHtml}
+                            ${group.countries.length > 1 ? `<span class="text-xs text-gray-400 ml-1">(${group.countries.length} ${t.regions_count})</span>` : ''}
+                            ${isLowest ? `<span class="ml-2 text-[10px] font-bold text-primary uppercase tracking-wide border border-primary/30 px-1 rounded">${t.best_badge}</span>` : ''}
                         </div>
                     </td>
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-500">${grup.price.originalAmount} ${grup.price.originalCurrency}</td>
-                    <td class="whitespace-nowrap px-6 py-4 font-medium ${enUcuzMu ? 'text-primary text-lg' : ''}">${yerelFiyat} ${userCurrency}</td>
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-400">$${grup.price.usd}</td>
+                    <td class="whitespace-nowrap px-6 py-4 text-gray-500">${group.price.originalAmount} ${group.price.originalCurrency}</td>
+                    <td class="whitespace-nowrap px-6 py-4 font-medium ${isLowest ? 'text-primary text-lg' : ''}">${localPrice} ${userCurrency}</td>
+                    <td class="whitespace-nowrap px-6 py-4 text-gray-400">$${group.price.usd}</td>
                 `;
 
-                parca.appendChild(tr);
+                fragment.appendChild(tr);
             });
 
             tbody.innerHTML = '';
-            tbody.appendChild(parca);
+            tbody.appendChild(fragment);
         }
-        function basligiGuncelle() {
+        function updateHeaderLabel() {
             const t = TRANSLATIONS[userLang] || TRANSLATIONS.EN;
-            const tabKey = 'tab_' + aktifSekme;
-            const cevirilmisSekmeIsmi = t[tabKey] || aktifSekmeIsmi;
+            // Get translated tab name
+            const tabKey = 'tab_' + activeTab;
+            const translatedTabName = t[tabKey] || activeTabName;
 
-            lowestLabelEl.textContent = `${t.lowest_label} ${cevirilmisSekmeIsmi.toUpperCase()}`;
+            lowestLabelEl.textContent = `${t.lowest_label} ${translatedTabName.toUpperCase()}`;
         }
 
-        function enDusukFiyatiGuncelle() {
-            basligiGuncelle();
+        function updateLowestPrice() {
+            updateHeaderLabel();
 
-            if (mevcutVeri.length === 0) {
+            if (currentData.length === 0) {
                 lowestPriceEl.textContent = '--';
                 lowestCountryEl.textContent = '--';
                 return;
