@@ -1,7 +1,7 @@
 # 🌍 EA Play Küresel Fiyat Takipçisi (Global Price Tracker)
 
 > [!TIP]
-> **Canlı Demo:** [https://yuksuk42.github.io/EA-Price-Tracker/offline.html](https://yuksuk42.github.io/EA-Price-Tracker/offline.html) (Son tarama verileriyle)
+> **Canlı Demo:** [10urdev.github.io/EA-Price-Tracker/offline.html](https://10urdev.github.io/EA-Price-Tracker/offline.html) (Son tarama verileriyle)
 
 Bu proje, **Node.js, Asenkron Mimari ve Proxy Yönetimi** konularında kendimi geliştirmek ve EA Play'in hangi ülkelerden daha ucuza alınabildiğini merak ettiğim için hazırladığım, EA Play abonelik fiyatlarını 89 farklı ülkeden (EA Play'in satıldığı neredeyse tüm bölgeler) çekip karşılaştıran bir araçtır.
 
